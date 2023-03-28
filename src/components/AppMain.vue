@@ -28,12 +28,18 @@ export default {
 </script>
 
 <template>
-    <div class="main-container container-centered">
+    <div v-if="store.cards.length < 50" class="loader">Loading...</div>
+    <div v-else class="main-container container-centered">
         <CardItem v-for="card in store.cards" :card="card"></CardItem>
     </div>
 </template>
 
 <style lang="scss" scoped>
+.loader {
+    font-size: 40px;
+    text-align: center;
+}
+
 .main-container {
     display: flex;
     flex-wrap: wrap;
