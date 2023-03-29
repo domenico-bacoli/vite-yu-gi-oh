@@ -4,6 +4,7 @@ import { store } from "../store.js";
 //importo il componente
 import CardSearch from "./CardSearch.vue";
 import CardItem from "./CardItem.vue";
+import CardSearchNumber from "./CardSearchNumber.vue";
 //importo axios
 import axios from "axios";
 
@@ -25,6 +26,7 @@ export default {
     components: {
         CardItem,
         CardSearch,
+        CardSearchNumber,
     },
 
     methods: {
@@ -32,6 +34,7 @@ export default {
             let apiNewString = this.store.apiCall + this.store.apiQuery + this.store.cardName;
             axios.get(apiNewString).then((res) => {
                 this.store.cards = res.data.data;
+                this.store.apiCount = res.data.data.length;
             });
         },
     },
@@ -41,6 +44,7 @@ export default {
 <template>
     <div v-if="store.isLoading" class="loader">Loading...</div>
     <CardSearch @searchCard="search()"></CardSearch>
+    <CardSearchNumber></CardSearchNumber>
     <div class="main-container container-centered">
         <CardItem v-for="card in store.cards" :card="card"></CardItem>
     </div>
