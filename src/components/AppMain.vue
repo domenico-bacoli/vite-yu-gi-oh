@@ -2,6 +2,7 @@
 //importo lo store indicando il path corretto
 import { store } from "../store.js";
 //importo il componente
+import CardSearch from "./CardSearch.vue";
 import CardItem from "./CardItem.vue";
 //importo axios
 import axios from "axios";
@@ -13,23 +14,34 @@ export default {
         };
     },
 
-    components: {
-        CardItem,
-    },
-
     created() {
         //richiesta API che avverrà al caricamento della pagina 
         axios.get('https://db.ygoprodeck.com/api/v7/cardinfo.php?num=50&offset=0').then((res) => {
             this.store.cards = res.data.data;
+            this.store.isLoading = false;
         });
     },
 
+    components: {
+        CardItem,
+        CardSearch,
+    },
+
+    methods: {
+        search() {
+            let apiNewString = this.store.apiCall + this.store.apiQuery + this.store.cardName;
+            axios.get(apiNewString).then((res) => {
+                this.store.cards = res.data.data;
+            });
+        },
+    },
 }
 </script>
 
 <template>
-    <div v-if="store.cards.length < 50" class="loader">Loading...</div>
-    <div v-else class="main-container container-centered">
+    <div v-if="store.isLoading" class="loader">Loading...</div>
+    <CardSearch @searchCard="search()"></CardSearch>
+    <div class="main-container container-centered">
         <CardItem v-for="card in store.cards" :card="card"></CardItem>
     </div>
 </template>
@@ -44,6 +56,6 @@ export default {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    padding: 60px 0;
+    padding: 40px 0;
 }
 </style>
