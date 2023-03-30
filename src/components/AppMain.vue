@@ -12,7 +12,6 @@ export default {
     data() {
         return {
             store,
-            errorMessage: "",
         };
     },
 
@@ -37,9 +36,14 @@ export default {
                 this.store.cards = res.data.data;
                 this.store.apiCount = res.data.data.length;
             })
-                .catch(error => {
+                .catch((error) => {
                     console.log(error);
-                    this.errorMessage = 'La carta che stai cercando non esiste!!';
+                    if (error.response.status == 400) {
+                        this.store.cards = [];
+
+                    } else {
+                        alert("Errore: " + error.response.statusText);
+                    }
                 });
         },
     },
@@ -50,9 +54,9 @@ export default {
     <div v-if="store.isLoading" class="loader">Loading...</div>
     <CardSearch @searchCard="search()"></CardSearch>
 
-    <CardSearchNumber :class="!errorMessage == '' ? 'none' : ''"></CardSearchNumber>
+    <CardSearchNumber></CardSearchNumber>
 
-    <div v-if="!errorMessage == ''" class="error-message">{{ errorMessage }}</div>
+    <div v-if="store.cards.length == 0" class="unknown-card">Non è stata trovata nessuna carta!</div>
 
     <div v-else class="main-container container-centered">
         <CardItem v-for="card in store.cards" :card="card"></CardItem>
@@ -65,7 +69,7 @@ export default {
     text-align: center;
 }
 
-.error-message {
+.unknown-card {
     text-align: center;
     font-style: italic;
     font-size: 30px;
@@ -77,9 +81,5 @@ export default {
     flex-wrap: wrap;
     gap: 20px;
     padding: 40px 0;
-}
-
-.none {
-    display: none;
 }
 </style>
